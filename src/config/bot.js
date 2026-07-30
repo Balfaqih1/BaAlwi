@@ -1,12 +1,11 @@
 import { logger } from "../utils/logger.js";
 
 /**
- * BaAlwi Bot configuration
+ * BaAlwi Bot Configuration
  *
- * This file contains only the general configuration required by the
- * BaAlwi project. Old Titan systems are disabled but some compatibility
- * properties and exported helper functions remain to prevent old imports
- * from crashing while the project is being migrated.
+ * ملف الإعدادات الرئيسي لبوت باعلوي.
+ * أبقينا بعض إعدادات Titan القديمة للتوافق المؤقت مع الملفات
+ * التي لم تُحذف أو تُعدّل بعد.
  */
 
 export const botConfig = {
@@ -21,15 +20,9 @@ export const botConfig = {
       "بوت بَاعَلَوي يقدّم محتوى متعلقًا بتراث السادة آل باعلوي، ويضم الأذكار، والأوراد، والقصائد، والمحتوى الإسلامي في مكانٍ واحد؛ لتسهيل الوصول إليها داخل ديسكورد.",
 
     version: process.env.BOT_VERSION || "1.0.0",
-
     website: process.env.BOT_WEBSITE || null,
-
     supportServer: process.env.SUPPORT_SERVER_URL || null,
 
-    /**
-     * Keep this false unless you have official permission to present
-     * the bot as an official BaAlwi application.
-     */
     official: process.env.BAALWI_OFFICIAL === "true",
   },
 
@@ -37,26 +30,10 @@ export const botConfig = {
   // BOT PRESENCE
   // ==================================================
   presence: {
-    /**
-     * Allowed values:
-     * online
-     * idle
-     * dnd
-     * invisible
-     */
     status: "online",
 
     activities: [
       {
-        /**
-         * Discord activity types:
-         * 0 = Playing
-         * 1 = Streaming
-         * 2 = Listening
-         * 3 = Watching
-         * 4 = Custom
-         * 5 = Competing
-         */
         name: "باعلوي",
         state: "الأذكار والأوراد والقصائد",
         type: 4,
@@ -68,10 +45,6 @@ export const botConfig = {
   // COMMAND SETTINGS
   // ==================================================
   commands: {
-    /**
-     * OWNER_IDS example:
-     * OWNER_IDS=123456789012345678,987654321098765432
-     */
     owners:
       process.env.OWNER_IDS
         ?.split(",")
@@ -109,7 +82,6 @@ export const botConfig = {
     ),
 
     maximumPageSize: 10,
-
     randomCooldown: 3,
 
     categories: {
@@ -150,17 +122,10 @@ export const botConfig = {
       },
     },
 
-    /**
-     * Show the source of each item whenever possible.
-     */
     showSource: true,
-
     showAuthor: true,
-
     allowBookmarks: true,
-
     allowSearch: true,
-
     allowRandomContent: true,
   },
 
@@ -170,16 +135,15 @@ export const botConfig = {
   prayerTimes: {
     enabled: true,
 
-    defaultCountry: process.env.DEFAULT_COUNTRY || "Saudi Arabia",
+    defaultCountry:
+      process.env.DEFAULT_COUNTRY || "Saudi Arabia",
 
-    defaultCity: process.env.DEFAULT_CITY || "Jeddah",
+    defaultCity:
+      process.env.DEFAULT_CITY || "Jeddah",
 
     defaultTimezone:
       process.env.DEFAULT_TIMEZONE || "Asia/Riyadh",
 
-    /**
-     * Calculation method should be handled by the prayer-time service.
-     */
     calculationMethod:
       process.env.PRAYER_CALCULATION_METHOD || "UmmAlQura",
 
@@ -232,12 +196,7 @@ export const botConfig = {
   adhan: {
     enabled: true,
 
-    /**
-     * The bot joins the configured voice channel, plays the adhan,
-     * and disconnects when playback finishes.
-     */
     joinVoiceChannel: true,
-
     leaveAfterPlayback: true,
 
     disconnectDelayMs: Number.parseInt(
@@ -250,9 +209,6 @@ export const botConfig = {
       10,
     ),
 
-    /**
-     * Local paths or remote URLs may be configured later.
-     */
     defaultAudio:
       process.env.ADHAN_AUDIO_URL ||
       "./assets/audio/adhan.mp3",
@@ -265,17 +221,11 @@ export const botConfig = {
       process.env.ADHAN_VOLUME || "0.8",
     ),
 
-    /**
-     * Prevent duplicate playback if the scheduler runs more than once.
-     */
     duplicateProtectionMinutes: Number.parseInt(
       process.env.ADHAN_DUPLICATE_PROTECTION_MINUTES || "10",
       10,
     ),
 
-    /**
-     * Do not interrupt another active audio session by default.
-     */
     interruptExistingAudio: false,
   },
 
@@ -284,15 +234,10 @@ export const botConfig = {
   // ==================================================
   reminders: {
     enabled: true,
-
     dailyAdhkar: true,
-
     morningAdhkar: true,
-
     eveningAdhkar: true,
-
     fridayReminder: true,
-
     specialOccasions: true,
 
     defaultTimezone:
@@ -300,7 +245,7 @@ export const botConfig = {
   },
 
   // ==================================================
-  // EMBED BRANDING
+  // BRANDING AND EMBEDS
   // ==================================================
   embeds: {
     colors: {
@@ -316,10 +261,6 @@ export const botConfig = {
       dark: "#17191C",
       gray: "#A8A8A8",
 
-      /**
-       * Compatibility colors retained for utilities that may still
-       * request old color keys.
-       */
       blurple: "#5865F2",
       green: "#57F287",
       yellow: "#FEE75C",
@@ -334,10 +275,6 @@ export const botConfig = {
       mawalid: "#D0B86C",
       hadrat: "#117B77",
 
-      /**
-       * Compatibility objects for old Titan utilities.
-       * Their related features remain disabled.
-       */
       giveaway: {
         active: "#57F287",
         ended: "#ED4245",
@@ -378,12 +315,14 @@ export const botConfig = {
   },
 
   // ==================================================
-  // GENERIC ARABIC MESSAGES
+  // ARABIC MESSAGES
   // ==================================================
   messages: {
-    noPermission: "ليس لديك إذن لاستخدام هذا الأمر.",
+    noPermission:
+      "ليس لديك إذن لاستخدام هذا الأمر.",
 
-    ownerOnly: "هذا الأمر متاح لمالك البوت فقط.",
+    ownerOnly:
+      "هذا الأمر متاح لمالك البوت فقط.",
 
     adminOnly:
       "هذا الأمر متاح لإدارة السيرفر فقط.",
@@ -432,9 +371,7 @@ export const botConfig = {
   // FEATURE TOGGLES
   // ==================================================
   features: {
-    /**
-     * Core BaAlwi systems
-     */
+    // BaAlwi features
     baalawiContent: true,
     adhkar: true,
     awrad: true,
@@ -450,12 +387,13 @@ export const botConfig = {
     search: true,
     bookmarks: true,
     utility: true,
-    voice: true,
     logging: true,
 
-    /**
-     * Old Titan systems disabled.
-     */
+    // Required for /join and voice commands
+    voice: true,
+    music: true,
+
+    // Disabled Titan systems
     economy: false,
     leveling: false,
     moderation: false,
@@ -470,24 +408,20 @@ export const botConfig = {
     tools: false,
     community: false,
     fun: false,
-    music: true,
   },
 
   // ==================================================
-  // COMPATIBILITY CONFIGURATION
+  // TITAN COMPATIBILITY
   // ==================================================
-  /**
-   * These minimal objects prevent older Titan modules from crashing
-   * while you remove their files gradually.
-   */
-
   applications: {
     defaultQuestions: [],
+
     statusColors: {
       pending: "#FEE75C",
       approved: "#57F287",
       denied: "#ED4245",
     },
+
     applicationCooldown: 24,
     deleteDeniedAfter: 7,
     deleteApprovedAfter: 30,
@@ -500,6 +434,7 @@ export const botConfig = {
       namePlural: "points",
       symbol: "",
     },
+
     startingBalance: 0,
     baseBankCapacity: 0,
     dailyAmount: 0,
@@ -507,12 +442,14 @@ export const botConfig = {
     workMax: 0,
     begMin: 0,
     begMax: 0,
+
     cooldowns: {
       daily: 0,
       work: 0,
       crime: 0,
       rob: 0,
     },
+
     robSuccessRate: 0,
     robFailJailTime: 0,
   },
@@ -541,6 +478,7 @@ export const botConfig = {
   birthday: {
     defaultRole: null,
     announcementChannel: null,
+
     timezone:
       process.env.DEFAULT_TIMEZONE || "Asia/Riyadh",
   },
@@ -548,6 +486,7 @@ export const botConfig = {
   verification: {
     defaultMessage: "",
     defaultButtonText: "",
+
     autoVerify: {
       defaultCriteria: "none",
       defaultAccountAgeDays: 7,
@@ -555,12 +494,14 @@ export const botConfig = {
       minAccountAge: 1,
       maxAccountAge: 365,
       sendDMNotification: false,
+
       criteria: {
         account_age: "",
         server_size: "",
         none: "",
       },
     },
+
     verificationCooldown: 5000,
     maxVerificationAttempts: 3,
     attemptWindow: 60_000,
@@ -587,21 +528,24 @@ export const botConfig = {
       type: "voice",
       channelName: "{name}-{count}",
     },
+
     permissions: {
       deny: [],
       allow: [],
     },
+
     messages: {
       created: "",
       deleted: "",
       updated: "",
     },
+
     types: {},
   },
 };
 
 // ==================================================
-// CONFIGURATION VALIDATION
+// CONFIG VALIDATION
 // ==================================================
 
 export function validateConfig(config = botConfig) {
@@ -644,7 +588,9 @@ export function validateConfig(config = botConfig) {
 
   if (
     config.prayerTimes.notifyBeforeMinutes < 0 ||
-    Number.isNaN(config.prayerTimes.notifyBeforeMinutes)
+    Number.isNaN(
+      config.prayerTimes.notifyBeforeMinutes,
+    )
   ) {
     errors.push(
       "PRAYER_NOTIFY_BEFORE_MINUTES must be a valid positive number.",
@@ -676,18 +622,22 @@ export function validateConfig(config = botConfig) {
 
   if (process.env.NODE_ENV !== "production") {
     logger.debug("BaAlwi environment check:");
+
     logger.debug(
       "DISCORD_TOKEN exists:",
       Boolean(token),
     );
+
     logger.debug(
       "CLIENT_ID exists:",
       Boolean(process.env.CLIENT_ID),
     );
+
     logger.debug(
       "GUILD_ID exists:",
       Boolean(process.env.GUILD_ID),
     );
+
     logger.debug(
       "DATABASE_URL exists:",
       Boolean(
@@ -695,6 +645,7 @@ export function validateConfig(config = botConfig) {
         process.env.POSTGRES_URL,
       ),
     );
+
     logger.debug(
       "NODE_ENV:",
       process.env.NODE_ENV || "development",
@@ -708,8 +659,7 @@ const configErrors = validateConfig(botConfig);
 
 if (configErrors.length > 0) {
   logger.error(
-    "BaAlwi bot configuration errors:\n" +
-      configErrors.join("\n"),
+    `BaAlwi bot configuration errors:\n${configErrors.join("\n")}`,
   );
 
   if (process.env.NODE_ENV === "production") {
@@ -717,7 +667,7 @@ if (configErrors.length > 0) {
   }
 }
 
-// Compatibility export used by some Titan files.
+// Compatibility export
 export const BotConfig = botConfig;
 
 // ==================================================
@@ -761,10 +711,10 @@ const COMMAND_CATEGORY_FEATURE_MAP = {
   voice: "voice",
   logging: "logging",
 
-  /**
-   * Old Titan category mappings are retained so the loader can
-   * recognize them and disable their commands through feature flags.
-   */
+  // Important: /join belongs to Music
+  music: "music",
+
+  // Old Titan mappings
   birthday: "birthday",
   community: "community",
   economy: "economy",
@@ -775,7 +725,6 @@ const COMMAND_CATEGORY_FEATURE_MAP = {
   join_to_create: "joinToCreate",
   leveling: "leveling",
   moderation: "moderation",
-  music: "music",
   reaction_roles: "reactionRoles",
   serverstats: "counter",
   counter: "counter",
@@ -863,15 +812,33 @@ export function isCommandCategoryEnabled(category) {
   const featureKey =
     COMMAND_CATEGORY_FEATURE_MAP[normalized];
 
-  /**
-   * Unknown categories remain enabled so new BaAlwi command
-   * categories do not silently disappear.
-   */
   if (!featureKey) {
+    logger.warn(
+      "Unknown command category; allowing it by default:",
+      {
+        category,
+        normalized,
+      },
+    );
+
     return true;
   }
 
-  return isFeatureEnabled(featureKey);
+  const configuredValue =
+    botConfig.features?.[featureKey];
+
+  const enabled =
+    isFeatureEnabled(featureKey);
+
+  logger.info("Feature check:", {
+    category,
+    normalized,
+    featureKey,
+    configuredValue,
+    enabled,
+  });
+
+  return enabled;
 }
 
 export function getContentCategory(categoryKey) {
@@ -911,9 +878,6 @@ export function isPrayerEnabled(prayerName) {
   );
 }
 
-/**
- * Compatibility helper retained for any old modules that import it.
- */
 export function getApplicationStatusColor(
   status,
 ) {
@@ -937,9 +901,6 @@ export function getApplicationStatusColor(
   return getColor("warning");
 }
 
-/**
- * Compatibility helper retained for old Titan modules.
- */
 export function getDefaultApplicationQuestions() {
   return (
     botConfig.applications
