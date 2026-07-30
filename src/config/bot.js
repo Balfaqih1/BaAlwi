@@ -3,9 +3,10 @@ import { logger } from "../utils/logger.js";
 /**
  * BaAlwi Bot Configuration
  *
- * ملف الإعدادات الرئيسي لبوت باعلوي.
- * أبقينا بعض إعدادات Titan القديمة للتوافق المؤقت مع الملفات
- * التي لم تُحذف أو تُعدّل بعد.
+ * الإعدادات الأساسية لبوت باعلوي.
+ * أنظمة الصوت والموسيقى والأذان الصوتي معطلة.
+ * أبقينا بعض إعدادات Titan القديمة مؤقتًا حتى لا تتعطل
+ * الملفات التي ما زالت تستوردها.
  */
 
 export const botConfig = {
@@ -73,7 +74,6 @@ export const botConfig = {
   // ==================================================
   content: {
     defaultLanguage: process.env.DEFAULT_LANGUAGE || "ar",
-
     supportedLanguages: ["ar"],
 
     defaultPageSize: Number.parseInt(
@@ -130,7 +130,7 @@ export const botConfig = {
   },
 
   // ==================================================
-  // PRAYER TIMES
+  // PRAYER TIMES — TEXT ONLY
   // ==================================================
   prayerTimes: {
     enabled: true,
@@ -191,49 +191,30 @@ export const botConfig = {
   },
 
   // ==================================================
-  // ADHAN VOICE SYSTEM
+  // ADHAN VOICE — DISABLED
   // ==================================================
   adhan: {
-    enabled: true,
-
-    joinVoiceChannel: true,
+    enabled: false,
+    joinVoiceChannel: false,
     leaveAfterPlayback: true,
 
-    disconnectDelayMs: Number.parseInt(
-      process.env.ADHAN_DISCONNECT_DELAY_MS || "3000",
-      10,
-    ),
+    disconnectDelayMs: 3000,
+    connectionTimeoutMs: 20000,
 
-    connectionTimeoutMs: Number.parseInt(
-      process.env.ADHAN_CONNECTION_TIMEOUT_MS || "20000",
-      10,
-    ),
+    defaultAudio: null,
+    fajrAudio: null,
 
-    defaultAudio:
-      process.env.ADHAN_AUDIO_URL ||
-      "./assets/audio/adhan.mp3",
-
-    fajrAudio:
-      process.env.FAJR_ADHAN_AUDIO_URL ||
-      "./assets/audio/fajr-adhan.mp3",
-
-    volume: Number.parseFloat(
-      process.env.ADHAN_VOLUME || "0.8",
-    ),
-
-    duplicateProtectionMinutes: Number.parseInt(
-      process.env.ADHAN_DUPLICATE_PROTECTION_MINUTES || "10",
-      10,
-    ),
-
+    volume: 0,
+    duplicateProtectionMinutes: 10,
     interruptExistingAudio: false,
   },
 
   // ==================================================
-  // REMINDERS
+  // TEXT REMINDERS
   // ==================================================
   reminders: {
     enabled: true,
+
     dailyAdhkar: true,
     morningAdhkar: true,
     eveningAdhkar: true,
@@ -245,7 +226,7 @@ export const botConfig = {
   },
 
   // ==================================================
-  // BRANDING AND EMBEDS
+  // BRANDING
   // ==================================================
   embeds: {
     colors: {
@@ -315,7 +296,7 @@ export const botConfig = {
   },
 
   // ==================================================
-  // ARABIC MESSAGES
+  // MESSAGES
   // ==================================================
   messages: {
     noPermission:
@@ -355,10 +336,10 @@ export const botConfig = {
       "يمكن استخدام هذا الأمر داخل السيرفر فقط.",
 
     voiceChannelRequired:
-      "يجب أن تدخل قناة صوتية أولًا.",
+      "الأوامر الصوتية غير مفعّلة في بوت باعلوي.",
 
     adhanChannelNotConfigured:
-      "لم يتم تحديد قناة صوتية للأذان في هذا السيرفر.",
+      "نظام الأذان الصوتي غير مفعّل.",
 
     prayerLocationNotConfigured:
       "لم يتم تحديد المدينة أو الموقع الخاص بمواقيت الصلاة.",
@@ -371,7 +352,7 @@ export const botConfig = {
   // FEATURE TOGGLES
   // ==================================================
   features: {
-    // BaAlwi features
+    // BaAlwi content
     baalawiContent: true,
     adhkar: true,
     awrad: true,
@@ -380,8 +361,8 @@ export const botConfig = {
     hadrat: true,
     duas: true,
 
+    // Prayer text systems
     prayerTimes: true,
-    adhan: true,
     reminders: true,
 
     search: true,
@@ -389,9 +370,10 @@ export const botConfig = {
     utility: true,
     logging: true,
 
-    // Required for /join and voice commands
-    voice: true,
-    music: true,
+    // Disabled voice systems
+    adhan: false,
+    voice: false,
+    music: false,
 
     // Disabled Titan systems
     economy: false,
@@ -459,7 +441,39 @@ export const botConfig = {
   tickets: {
     defaultCategory: null,
     supportRoles: [],
-    priorities: {},
+
+    priorities: {
+      none: {
+        emoji: "⚪",
+        color: "#95A5A6",
+        label: "None",
+      },
+
+      low: {
+        emoji: "🟢",
+        color: "#2ECC71",
+        label: "Low",
+      },
+
+      medium: {
+        emoji: "🟡",
+        color: "#F1C40F",
+        label: "Medium",
+      },
+
+      high: {
+        emoji: "🔴",
+        color: "#E74C3C",
+        label: "High",
+      },
+
+      urgent: {
+        emoji: "🚨",
+        color: "#E91E63",
+        label: "Urgent",
+      },
+    },
+
     defaultPriority: "none",
     archiveCategory: null,
     logChannel: null,
@@ -577,16 +591,6 @@ export function validateConfig(config = botConfig) {
   }
 
   if (
-    config.adhan.volume < 0 ||
-    config.adhan.volume > 1 ||
-    Number.isNaN(config.adhan.volume)
-  ) {
-    errors.push(
-      "ADHAN_VOLUME must be a number between 0 and 1.",
-    );
-  }
-
-  if (
     config.prayerTimes.notifyBeforeMinutes < 0 ||
     Number.isNaN(
       config.prayerTimes.notifyBeforeMinutes,
@@ -667,7 +671,6 @@ if (configErrors.length > 0) {
   }
 }
 
-// Compatibility export
 export const BotConfig = botConfig;
 
 // ==================================================
@@ -700,7 +703,6 @@ const COMMAND_CATEGORY_FEATURE_MAP = {
   prayertimes: "prayerTimes",
   prayer_times: "prayerTimes",
 
-  adhan: "adhan",
   reminders: "reminders",
 
   bookmark: "bookmarks",
@@ -708,35 +710,44 @@ const COMMAND_CATEGORY_FEATURE_MAP = {
 
   search: "search",
   utility: "utility",
-  voice: "voice",
   logging: "logging",
 
-  // Important: /join belongs to Music
+  // Disabled voice categories
+  adhan: "adhan",
+  voice: "voice",
   music: "music",
 
-  // Old Titan mappings
+  // Disabled Titan categories
   birthday: "birthday",
   community: "community",
   economy: "economy",
   fun: "fun",
+
   giveaway: "giveaways",
   giveaways: "giveaways",
+
   jointocreate: "joinToCreate",
   join_to_create: "joinToCreate",
+
   leveling: "leveling",
   moderation: "moderation",
+
+  reactionroles: "reactionRoles",
   reaction_roles: "reactionRoles",
+
   serverstats: "counter",
   counter: "counter",
+
   ticket: "tickets",
   tickets: "tickets",
+
   tools: "tools",
   verification: "verification",
   welcome: "welcome",
 };
 
 // ==================================================
-// HELPER FUNCTIONS
+// HELPERS
 // ==================================================
 
 function normalizeCategoryKey(category) {
@@ -813,32 +824,10 @@ export function isCommandCategoryEnabled(category) {
     COMMAND_CATEGORY_FEATURE_MAP[normalized];
 
   if (!featureKey) {
-    logger.warn(
-      "Unknown command category; allowing it by default:",
-      {
-        category,
-        normalized,
-      },
-    );
-
     return true;
   }
 
-  const configuredValue =
-    botConfig.features?.[featureKey];
-
-  const enabled =
-    isFeatureEnabled(featureKey);
-
-  logger.info("Feature check:", {
-    category,
-    normalized,
-    featureKey,
-    configuredValue,
-    enabled,
-  });
-
-  return enabled;
+  return isFeatureEnabled(featureKey);
 }
 
 export function getContentCategory(categoryKey) {
@@ -934,7 +923,7 @@ export function getColor(
 
   if (typeof path !== "string") {
     return Number.parseInt(
-      fallback.slice(1),
+      fallback.replace("#", ""),
       16,
     );
   }
