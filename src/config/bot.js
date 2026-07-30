@@ -470,7 +470,7 @@ export const botConfig = {
     tools: false,
     community: false,
     fun: false,
-    music: false,
+    music: true,
   },
 
   // ==================================================
