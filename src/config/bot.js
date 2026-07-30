@@ -1,113 +1,325 @@
-import { logger } from '../utils/logger.js';
+import { logger } from "../utils/logger.js";
+
+/**
+ * BaAlwi Bot configuration
+ *
+ * This file contains only the general configuration required by the
+ * BaAlwi project. Old Titan systems are disabled but some compatibility
+ * properties and exported helper functions remain to prevent old imports
+ * from crashing while the project is being migrated.
+ */
 
 export const botConfig = {
-  // =========================
-  // BOT PRESENCE (what users see under the bot name)
-  // =========================
-  // `status` options:
-  // - "online"    = green dot
-  // - "idle"      = yellow moon
-  // - "dnd"       = red do-not-disturb
-  // - "invisible" = appears offline
+  // ==================================================
+  // BOT IDENTITY
+  // ==================================================
+  identity: {
+    name: "باعلوي",
+    englishName: "BaAlwi",
+
+    description:
+      "بوت بَاعَلَوي يقدّم محتوى متعلقًا بتراث السادة آل باعلوي، ويضم الأذكار، والأوراد، والقصائد، والمحتوى الإسلامي في مكانٍ واحد؛ لتسهيل الوصول إليها داخل ديسكورد.",
+
+    version: process.env.BOT_VERSION || "1.0.0",
+
+    website: process.env.BOT_WEBSITE || null,
+
+    supportServer: process.env.SUPPORT_SERVER_URL || null,
+
+    /**
+     * Keep this false unless you have official permission to present
+     * the bot as an official BaAlwi application.
+     */
+    official: process.env.BAALWI_OFFICIAL === "true",
+  },
+
+  // ==================================================
+  // BOT PRESENCE
+  // ==================================================
   presence: {
-    // Current online state shown on Discord.
+    /**
+     * Allowed values:
+     * online
+     * idle
+     * dnd
+     * invisible
+     */
     status: "online",
 
-    // Activity lines shown under the bot name.
-    // `type` number mapping from Discord:
-    // 0 = Playing
-    // 1 = Streaming
-    // 2 = Listening
-    // 3 = Watching
-    // 4 = Custom
-    // 5 = Competing
     activities: [
       {
-        name: "Custom Status", // required by Discord API, not shown in the client
-        state: "stalking",     // this is what people actually see
-        type: 4,               // Custom
+        /**
+         * Discord activity types:
+         * 0 = Playing
+         * 1 = Streaming
+         * 2 = Listening
+         * 3 = Watching
+         * 4 = Custom
+         * 5 = Competing
+         */
+        name: "باعلوي",
+        state: "الأذكار والأوراد والقصائد",
+        type: 4,
       },
     ],
   },
 
-  // =========================
-  // COMMAND BEHAVIOR
-  // =========================
+  // ==================================================
+  // COMMAND SETTINGS
+  // ==================================================
   commands: {
-    // Bot owner user IDs (comma-separated in OWNER_IDS env var).
-    // Owners can access owner/admin-level bot commands.
-    owners: process.env.OWNER_IDS?.split(",").map((id) => id.trim()).filter(Boolean) || [],
+    /**
+     * OWNER_IDS example:
+     * OWNER_IDS=123456789012345678,987654321098765432
+     */
+    owners:
+      process.env.OWNER_IDS
+        ?.split(",")
+        .map((id) => id.trim())
+        .filter(Boolean) || [],
 
-    // Default wait time between command uses (in seconds).
-    defaultCooldown: 3,
-
-    // If true, old commands are removed before re-registering.
-    deleteCommands: false,
-
-    // Optional server ID retained for tutorial compatibility; not used for command registration.
-    testGuildId: process.env.TEST_GUILD_ID,
-
-    // When true (or MAINTENANCE_MODE=true), only bot owners can run commands.
-    maintenanceMode: process.env.MAINTENANCE_MODE === "true",
-
-    // Command prefix for text-based commands (e.g., "!" for "!ping").
-    // Supports both slash commands and prefix commands.
     prefix: process.env.PREFIX || "!",
+
+    defaultCooldown: Number.parseInt(
+      process.env.DEFAULT_COMMAND_COOLDOWN || "3",
+      10,
+    ),
+
+    deleteCommands: process.env.DELETE_COMMANDS === "true",
+
+    testGuildId:
+      process.env.TEST_GUILD_ID ||
+      process.env.GUILD_ID ||
+      null,
+
+    maintenanceMode: process.env.MAINTENANCE_MODE === "true",
   },
 
-  // =========================
-  // APPLICATIONS SYSTEM
-  // =========================
-  applications: {
-    // Default questions shown when someone fills out an application.
-    defaultQuestions: [
-      { question: "What is your name?", required: true },
-      { question: "How old are you?", required: true },
-      { question: "Why do you want to join?", required: true },
-    ],
+  // ==================================================
+  // BAALWI CONTENT
+  // ==================================================
+  content: {
+    defaultLanguage: process.env.DEFAULT_LANGUAGE || "ar",
 
-    // Embed colors by application status.
-    statusColors: {
-      pending: "#FFA500",
-      approved: "#00FF00",
-      denied: "#FF0000",
+    supportedLanguages: ["ar"],
+
+    defaultPageSize: Number.parseInt(
+      process.env.CONTENT_PAGE_SIZE || "5",
+      10,
+    ),
+
+    maximumPageSize: 10,
+
+    randomCooldown: 3,
+
+    categories: {
+      adhkar: {
+        enabled: true,
+        label: "الأذكار",
+        emoji: "📿",
+      },
+
+      awrad: {
+        enabled: true,
+        label: "الأوراد",
+        emoji: "🤲",
+      },
+
+      qasaid: {
+        enabled: true,
+        label: "القصائد",
+        emoji: "📜",
+      },
+
+      mawalid: {
+        enabled: true,
+        label: "الموالد",
+        emoji: "🌙",
+      },
+
+      hadrat: {
+        enabled: true,
+        label: "الحضرات",
+        emoji: "🕌",
+      },
+
+      duas: {
+        enabled: true,
+        label: "الأدعية",
+        emoji: "🤍",
+      },
     },
 
-    // How long users must wait before submitting another application (hours).
-    applicationCooldown: 24,
+    /**
+     * Show the source of each item whenever possible.
+     */
+    showSource: true,
 
-    // Auto-delete denied applications after this many days.
-    deleteDeniedAfter: 7,
+    showAuthor: true,
 
-    // Auto-delete approved applications after this many days.
-    deleteApprovedAfter: 30,
+    allowBookmarks: true,
 
-    // Role IDs allowed to manage applications.
-    managerRoles: [], // Will be populated from environment or database
+    allowSearch: true,
+
+    allowRandomContent: true,
   },
 
-  // =========================
-  // EMBED COLORS & BRANDING
-  // =========================
-  // IMPORTANT: This is the SINGLE SOURCE OF TRUTH for all bot colors
+  // ==================================================
+  // PRAYER TIMES
+  // ==================================================
+  prayerTimes: {
+    enabled: true,
+
+    defaultCountry: process.env.DEFAULT_COUNTRY || "Saudi Arabia",
+
+    defaultCity: process.env.DEFAULT_CITY || "Jeddah",
+
+    defaultTimezone:
+      process.env.DEFAULT_TIMEZONE || "Asia/Riyadh",
+
+    /**
+     * Calculation method should be handled by the prayer-time service.
+     */
+    calculationMethod:
+      process.env.PRAYER_CALCULATION_METHOD || "UmmAlQura",
+
+    sendTextNotification: true,
+
+    sendBeforePrayerNotification:
+      process.env.PRAYER_EARLY_NOTIFICATION === "true",
+
+    notifyBeforeMinutes: Number.parseInt(
+      process.env.PRAYER_NOTIFY_BEFORE_MINUTES || "10",
+      10,
+    ),
+
+    prayers: {
+      fajr: {
+        enabled: true,
+        label: "الفجر",
+      },
+
+      sunrise: {
+        enabled: false,
+        label: "الشروق",
+      },
+
+      dhuhr: {
+        enabled: true,
+        label: "الظهر",
+      },
+
+      asr: {
+        enabled: true,
+        label: "العصر",
+      },
+
+      maghrib: {
+        enabled: true,
+        label: "المغرب",
+      },
+
+      isha: {
+        enabled: true,
+        label: "العشاء",
+      },
+    },
+  },
+
+  // ==================================================
+  // ADHAN VOICE SYSTEM
+  // ==================================================
+  adhan: {
+    enabled: true,
+
+    /**
+     * The bot joins the configured voice channel, plays the adhan,
+     * and disconnects when playback finishes.
+     */
+    joinVoiceChannel: true,
+
+    leaveAfterPlayback: true,
+
+    disconnectDelayMs: Number.parseInt(
+      process.env.ADHAN_DISCONNECT_DELAY_MS || "3000",
+      10,
+    ),
+
+    connectionTimeoutMs: Number.parseInt(
+      process.env.ADHAN_CONNECTION_TIMEOUT_MS || "20000",
+      10,
+    ),
+
+    /**
+     * Local paths or remote URLs may be configured later.
+     */
+    defaultAudio:
+      process.env.ADHAN_AUDIO_URL ||
+      "./assets/audio/adhan.mp3",
+
+    fajrAudio:
+      process.env.FAJR_ADHAN_AUDIO_URL ||
+      "./assets/audio/fajr-adhan.mp3",
+
+    volume: Number.parseFloat(
+      process.env.ADHAN_VOLUME || "0.8",
+    ),
+
+    /**
+     * Prevent duplicate playback if the scheduler runs more than once.
+     */
+    duplicateProtectionMinutes: Number.parseInt(
+      process.env.ADHAN_DUPLICATE_PROTECTION_MINUTES || "10",
+      10,
+    ),
+
+    /**
+     * Do not interrupt another active audio session by default.
+     */
+    interruptExistingAudio: false,
+  },
+
+  // ==================================================
+  // REMINDERS
+  // ==================================================
+  reminders: {
+    enabled: true,
+
+    dailyAdhkar: true,
+
+    morningAdhkar: true,
+
+    eveningAdhkar: true,
+
+    fridayReminder: true,
+
+    specialOccasions: true,
+
+    defaultTimezone:
+      process.env.DEFAULT_TIMEZONE || "Asia/Riyadh",
+  },
+
+  // ==================================================
+  // EMBED BRANDING
+  // ==================================================
   embeds: {
     colors: {
-      // Main brand colors.
-      primary: "#336699",
-      secondary: "#2F3136",
+      primary: "#159D98",
+      secondary: "#C8AF69",
 
-      // Standard status colors for success/error/warning/info messages.
       success: "#57F287",
       error: "#ED4245",
       warning: "#FEE75C",
-      info: "#3498DB",
+      info: "#159D98",
 
-      // Neutral utility colors.
       light: "#FFFFFF",
-      dark: "#202225",
-      gray: "#99AAB5",
+      dark: "#17191C",
+      gray: "#A8A8A8",
 
-      // Discord-style palette shortcuts.
+      /**
+       * Compatibility colors retained for utilities that may still
+       * request old color keys.
+       */
       blurple: "#5865F2",
       green: "#57F287",
       yellow: "#FEE75C",
@@ -115,451 +327,482 @@ export const botConfig = {
       red: "#ED4245",
       black: "#000000",
 
-      // Feature-specific colors.
+      prayer: "#C8AF69",
+      adhkar: "#159D98",
+      awrad: "#148C87",
+      qasaid: "#B99A4F",
+      mawalid: "#D0B86C",
+      hadrat: "#117B77",
+
+      /**
+       * Compatibility objects for old Titan utilities.
+       * Their related features remain disabled.
+       */
       giveaway: {
         active: "#57F287",
         ended: "#ED4245",
       },
+
       ticket: {
         open: "#57F287",
         claimed: "#FAA61A",
         closed: "#ED4245",
         pending: "#99AAB5",
       },
+
+      priority: {
+        none: "#95A5A6",
+        low: "#3498DB",
+        medium: "#2ECC71",
+        high: "#F1C40F",
+        urgent: "#E74C3C",
+      },
+
       economy: "#F1C40F",
       birthday: "#E91E63",
       moderation: "#9B59B6",
+    },
 
-      // Ticket priority color mapping.
-      priority: {
-        none: "#95A5A6",
-        low: "#3498db",
-        medium: "#2ecc71",
-        high: "#f1c40f",
-        urgent: "#e74c3c",
-      },
-    },
     footer: {
-      // Default footer text used in bot embeds.
-      text: "Titan Bot",
-      // Footer icon URL (null = no icon).
-      icon: null,
+      text: "بوت باعلوي",
+      icon: process.env.BOT_ICON_URL || null,
     },
-    // Default thumbnail URL for embeds (null = no thumbnail).
-    thumbnail: null,
+
+    thumbnail: process.env.BOT_ICON_URL || null,
+
     author: {
-      // Optional default embed author block.
-      name: null,
-      icon: null,
-      url: null,
+      name: "باعلوي",
+      icon: process.env.BOT_ICON_URL || null,
+      url: process.env.BOT_WEBSITE || null,
     },
   },
 
-  // =========================
-  // ECONOMY SETTINGS
-  // =========================
+  // ==================================================
+  // GENERIC ARABIC MESSAGES
+  // ==================================================
+  messages: {
+    noPermission: "ليس لديك إذن لاستخدام هذا الأمر.",
+
+    ownerOnly: "هذا الأمر متاح لمالك البوت فقط.",
+
+    adminOnly:
+      "هذا الأمر متاح لإدارة السيرفر فقط.",
+
+    cooldownActive:
+      "يرجى الانتظار {time} قبل استخدام الأمر مرة أخرى.",
+
+    errorOccurred:
+      "حدث خطأ أثناء تنفيذ الأمر. يرجى المحاولة مرة أخرى.",
+
+    missingPermissions:
+      "لا أمتلك الصلاحيات المطلوبة لتنفيذ هذا الإجراء.",
+
+    commandDisabled:
+      "هذا الأمر غير مفعّل حاليًا.",
+
+    maintenanceMode:
+      "البوت تحت الصيانة حاليًا. يرجى المحاولة لاحقًا.",
+
+    contentNotFound:
+      "لم يتم العثور على محتوى مطابق.",
+
+    noResults:
+      "لا توجد نتائج مطابقة لبحثك.",
+
+    invalidPage:
+      "رقم الصفحة غير صحيح.",
+
+    guildOnly:
+      "يمكن استخدام هذا الأمر داخل السيرفر فقط.",
+
+    voiceChannelRequired:
+      "يجب أن تدخل قناة صوتية أولًا.",
+
+    adhanChannelNotConfigured:
+      "لم يتم تحديد قناة صوتية للأذان في هذا السيرفر.",
+
+    prayerLocationNotConfigured:
+      "لم يتم تحديد المدينة أو الموقع الخاص بمواقيت الصلاة.",
+
+    databaseUnavailable:
+      "قاعدة البيانات غير متاحة حاليًا. يرجى المحاولة لاحقًا.",
+  },
+
+  // ==================================================
+  // FEATURE TOGGLES
+  // ==================================================
+  features: {
+    /**
+     * Core BaAlwi systems
+     */
+    baalawiContent: true,
+    adhkar: true,
+    awrad: true,
+    qasaid: true,
+    mawalid: true,
+    hadrat: true,
+    duas: true,
+
+    prayerTimes: true,
+    adhan: true,
+    reminders: true,
+
+    search: true,
+    bookmarks: true,
+    utility: true,
+    voice: true,
+    logging: true,
+
+    /**
+     * Old Titan systems disabled.
+     */
+    economy: false,
+    leveling: false,
+    moderation: false,
+    welcome: false,
+    tickets: false,
+    giveaways: false,
+    birthday: false,
+    counter: false,
+    verification: false,
+    reactionRoles: false,
+    joinToCreate: false,
+    tools: false,
+    community: false,
+    fun: false,
+    music: false,
+  },
+
+  // ==================================================
+  // COMPATIBILITY CONFIGURATION
+  // ==================================================
+  /**
+   * These minimal objects prevent older Titan modules from crashing
+   * while you remove their files gradually.
+   */
+
+  applications: {
+    defaultQuestions: [],
+    statusColors: {
+      pending: "#FEE75C",
+      approved: "#57F287",
+      denied: "#ED4245",
+    },
+    applicationCooldown: 24,
+    deleteDeniedAfter: 7,
+    deleteApprovedAfter: 30,
+    managerRoles: [],
+  },
+
   economy: {
     currency: {
-      // Currency display name.
-      name: "coins",
-      // Plural display name.
-      namePlural: "coins",
-      // Currency symbol shown in balances.
-      symbol: "$",
+      name: "points",
+      namePlural: "points",
+      symbol: "",
     },
-
-    // Starting balance for new users.
     startingBalance: 0,
-
-    // Maximum bank amount before upgrades (if upgrades are used).
-    baseBankCapacity: 100000,
-
-    // Daily reward amount.
-    dailyAmount: 100,
-
-    // Work command random payout range.
-    workMin: 10,
-    workMax: 100,
-
-    // Beg command random payout range.
-    begMin: 5,
-    begMax: 50,
-
-    // Command cooldowns (milliseconds).
+    baseBankCapacity: 0,
+    dailyAmount: 0,
+    workMin: 0,
+    workMax: 0,
+    begMin: 0,
+    begMax: 0,
     cooldowns: {
-      daily: 24 * 60 * 60 * 1000,
-      work: 60 * 60 * 1000,
-      crime: 2 * 60 * 60 * 1000,
-      rob: 4 * 60 * 60 * 1000,
+      daily: 0,
+      work: 0,
+      crime: 0,
+      rob: 0,
     },
-
-    // Chance to succeed when robbing (0.4 = 40%).
-    robSuccessRate: 0.4,
-
-    // Jail time after failed rob (milliseconds).
-    // 3600000 = 1 hour.
-    robFailJailTime: 3600000,
+    robSuccessRate: 0,
+    robFailJailTime: 0,
   },
 
-  // =========================
-  // SHOP SETTINGS
-  // =========================
-  // Add shop defaults here when needed.
-  shop: {
+  shop: {},
 
-  },
-
-  // =========================
-  // TICKET SYSTEM
-  // =========================
   tickets: {
-    // Category ID where new tickets are created (null = no forced category).
     defaultCategory: null,
-
-    // Role IDs allowed to manage/support tickets.
     supportRoles: [],
-
-    // Priority options users/staff can assign.
-    priorities: {
-      none: {
-        emoji: "⚪",
-        color: "#95A5A6",
-        label: "None",
-      },
-      low: {
-        emoji: "🟢",
-        color: "#2ECC71",
-        label: "Low",
-      },
-      medium: {
-        emoji: "🟡",
-        color: "#F1C40F",
-        label: "Medium",
-      },
-      high: {
-        emoji: "🔴",
-        color: "#E74C3C",
-        label: "High",
-      },
-      urgent: {
-        emoji: "🚨",
-        color: "#E91E63",
-        label: "Urgent",
-      },
-    },
-
-    // Default priority for new tickets.
+    priorities: {},
     defaultPriority: "none",
-
-    // Category ID where closed tickets are archived.
     archiveCategory: null,
-
-    // Channel ID where ticket logs are sent.
     logChannel: null,
   },
 
-  // =========================
-  // GIVEAWAY SETTINGS
-  // =========================
   giveaways: {
-    // Default giveaway duration in milliseconds.
-    // 86400000 = 24 hours.
-    defaultDuration: 86400000,
-
-    // Allowed winner count range.
+    defaultDuration: 86_400_000,
     minimumWinners: 1,
-    maximumWinners: 10,
-
-    // Allowed giveaway duration range in milliseconds.
-    // 300000 = 5 minutes.
-    minimumDuration: 300000,
-    // 2592000000 = 30 days.
-    maximumDuration: 2592000000,
-
-    // Role IDs allowed to host giveaways.
+    maximumWinners: 1,
+    minimumDuration: 300_000,
+    maximumDuration: 2_592_000_000,
     allowedRoles: [],
-
-    // Role IDs that bypass giveaway restrictions.
     bypassRoles: [],
   },
 
-  // =========================
-  // BIRTHDAY SETTINGS
-  // =========================
   birthday: {
-    // Role ID given to users on their birthday.
     defaultRole: null,
-
-    // Channel ID where birthday announcements are posted.
     announcementChannel: null,
-
-    // Timezone used to calculate birthday dates.
-    timezone: "UTC",
+    timezone:
+      process.env.DEFAULT_TIMEZONE || "Asia/Riyadh",
   },
 
-  // =========================
-  // VERIFICATION SETTINGS
-  // =========================
   verification: {
-    // Message shown when posting the verification panel.
-    defaultMessage: "Click the button below to verify yourself and gain access to the server!",
-
-    // Text on the verification button.
-    defaultButtonText: "Verify",
-
-    // Automatic verification behavior.
+    defaultMessage: "",
+    defaultButtonText: "",
     autoVerify: {
-      // How automatic verification decides who is auto-approved:
-      // - "none"        = everyone is auto-verified immediately
-      // - "account_age" = account must be older than set days
-      // - "server_size" = auto-verify everyone only in smaller servers
       defaultCriteria: "none",
-
-      // Days used when `defaultCriteria` is `account_age`.
       defaultAccountAgeDays: 7,
-
-      // Member count threshold used when `defaultCriteria` is `server_size`.
-      // Example: 1000 means auto-verify if server has fewer than 1000 members.
       serverSizeThreshold: 1000,
-
-      // Allowed safety limits for account-age requirements.
-      // 1 = minimum day, 365 = maximum days.
       minAccountAge: 1,
       maxAccountAge: 365,
-
-      // If true, user receives a DM after verification.
-      sendDMNotification: true,
-
-      // Human-readable descriptions for each criteria mode.
+      sendDMNotification: false,
       criteria: {
-        account_age: "Account must be older than specified days",
-        server_size: "All users if server has less than 1000 members",
-        none: "All users immediately"
-      }
+        account_age: "",
+        server_size: "",
+        none: "",
+      },
     },
-
-    // Minimum time between verification attempts (milliseconds).
-    // 5000 = 5 seconds.
     verificationCooldown: 5000,
-
-    // Maximum failed attempts allowed inside the time window below.
     maxVerificationAttempts: 3,
-
-    // Time window for counting attempts (milliseconds).
-    // 60000 = 1 minute.
-    attemptWindow: 60000,
-
-    // In-memory safety limits (helps avoid unbounded memory growth).
-    maxCooldownEntries: 10000,
-    maxAttemptEntries: 10000,
-    // Cleanup frequency for cooldown/attempt maps (milliseconds).
-    // 300000 = 5 minutes.
-    cooldownCleanupInterval: 300000,
-    // Maximum metadata payload size for audit entries (bytes).
+    attemptWindow: 60_000,
+    maxCooldownEntries: 1000,
+    maxAttemptEntries: 1000,
+    cooldownCleanupInterval: 300_000,
     maxAuditMetadataBytes: 4096,
-    // Maximum number of audit entries kept in memory.
-    maxInMemoryAuditEntries: 1000,
-    // If true, log every verification action.
-    logAllVerifications: true,
-    // If true, preserve verification audit history.
-    keepAuditTrail: true,
+    maxInMemoryAuditEntries: 100,
+    logAllVerifications: false,
+    keepAuditTrail: false,
   },
 
-  // =========================
-  // WELCOME / GOODBYE MESSAGES
-  // =========================
   welcome: {
-    // Welcome template posted when a user joins.
-    // Placeholders: {user}, {server}, {memberCount}
-    defaultWelcomeMessage:
-      "Welcome {user} to {server}! We now have {memberCount} members!",
-    // Goodbye template posted when a user leaves.
-    // Placeholders: {user}, {memberCount}
-    defaultGoodbyeMessage:
-      "{user} has left the server. We now have {memberCount} members.",
-    // Channel ID for welcome messages.
+    defaultWelcomeMessage: "",
+    defaultGoodbyeMessage: "",
     defaultWelcomeChannel: null,
-    // Channel ID for goodbye messages.
     defaultGoodbyeChannel: null,
   },
 
-  // =========================
-  // COUNTER CHANNELS
-  // =========================
   counters: {
     defaults: {
-      // Default naming/description templates for counter entries.
       name: "{name} Counter",
-      description: "Server {name} counter",
-      // Channel type used for counters (typically "voice").
+      description: "",
       type: "voice",
-      // Channel name format. `{count}` is replaced automatically.
       channelName: "{name}-{count}",
     },
     permissions: {
-      // Default denied permissions for the counter channel.
-      deny: ["VIEW_CHANNEL"],
-      // Default allowed permissions for the counter channel.
-      allow: ["VIEW_CHANNEL", "CONNECT", "SPEAK"],
+      deny: [],
+      allow: [],
     },
     messages: {
-      // Default response messages for counter actions.
-      created: "✅ Created counter **{name}**",
-      deleted: "🗑️ Deleted counter **{name}**",
-      updated: "🔄 Updated counter **{name}**",
+      created: "",
+      deleted: "",
+      updated: "",
     },
-    types: {
-      // Built-in counter types and how each count is calculated.
-      members: {
-        name: "👥 Members",
-        description: "Total members in the server",
-        getCount: (guild) => guild.memberCount.toString(),
-      },
-      bots: {
-        name: "🤖 Bots",
-        description: "Total bot accounts in the server",
-        getCount: (guild) =>
-          guild.members.cache.filter((m) => m.user.bot).size.toString(),
-      },
-      members_only: {
-        name: "👤 Humans",
-        description: "Total human members (non-bots)",
-        getCount: (guild) =>
-          guild.members.cache.filter((m) => !m.user.bot).size.toString(),
-      },
-    },
-  },
-
-  // =========================
-  // GENERIC BOT MESSAGES
-  // =========================
-  messages: {
-    noPermission: "You do not have permission to use this command.",
-    cooldownActive: "Please wait {time} before using this command again.",
-    errorOccurred: "An error occurred while executing this command.",
-    missingPermissions:
-      "I am missing required permissions to perform this action.",
-    commandDisabled: "This command has been disabled.",
-    maintenanceMode: "The bot is currently in maintenance mode.",
-  },
-
-  // =========================
-  // FEATURE TOGGLES
-  // =========================
-  // Set any feature to `false` to disable it globally.
-  features: {
-    // Core systems.
-    economy: true,
-    leveling: true,
-    moderation: true,
-    logging: true,
-    welcome: true,
-
-    // Community engagement systems.
-    tickets: true,
-    giveaways: true,
-    birthday: true,
-    counter: true,
-
-    // Security and self-service systems.
-    verification: true,
-    reactionRoles: true,
-    joinToCreate: true,
-
-    // Utility/quality-of-life modules.
-    voice: true,
-    search: true,
-    tools: true,
-    utility: true,
-    community: true,
-    fun: true,
-    music: true,
+    types: {},
   },
 };
 
-export function validateConfig(config) {
+// ==================================================
+// CONFIGURATION VALIDATION
+// ==================================================
+
+export function validateConfig(config = botConfig) {
   const errors = [];
 
-  if (process.env.NODE_ENV !== 'production') {
-    logger.debug('Environment variables check:');
-    logger.debug('DISCORD_TOKEN exists:', !!process.env.DISCORD_TOKEN);
-    logger.debug('TOKEN exists:', !!process.env.TOKEN);
-    logger.debug('CLIENT_ID exists:', !!process.env.CLIENT_ID);
-    logger.debug('GUILD_ID exists:', !!process.env.GUILD_ID);
-    logger.debug('POSTGRES_HOST exists:', !!process.env.POSTGRES_HOST);
-    logger.debug('NODE_ENV:', process.env.NODE_ENV);
-  }
+  const token =
+    process.env.DISCORD_TOKEN ||
+    process.env.TOKEN;
 
-  if (!process.env.DISCORD_TOKEN && !process.env.TOKEN) {
-    errors.push("Bot token is required (DISCORD_TOKEN or TOKEN environment variable)");
+  if (!token) {
+    errors.push(
+      "Bot token is required. Set DISCORD_TOKEN or TOKEN.",
+    );
   }
 
   if (!process.env.CLIENT_ID) {
-    errors.push("Client ID is required (CLIENT_ID environment variable)");
+    errors.push(
+      "Discord application ID is required. Set CLIENT_ID.",
+    );
   }
 
-  if (process.env.NODE_ENV === 'production') {
-    // A full connection URL (DATABASE_URL / POSTGRES_URL) satisfies all Postgres
-    // requirements, matching how src/config/database/postgres.js resolves the pool config.
-    const hasConnectionUrl = Boolean(process.env.POSTGRES_URL || process.env.DATABASE_URL);
+  if (
+    config.commands.defaultCooldown < 0 ||
+    Number.isNaN(config.commands.defaultCooldown)
+  ) {
+    errors.push(
+      "DEFAULT_COMMAND_COOLDOWN must be a valid positive number.",
+    );
+  }
 
-    if (!hasConnectionUrl) {
-      if (!process.env.POSTGRES_HOST) {
-        errors.push("PostgreSQL connection is required in production (set DATABASE_URL/POSTGRES_URL, or POSTGRES_HOST)");
-      }
-      if (!process.env.POSTGRES_USER) {
-        errors.push("PostgreSQL user is required in production (set DATABASE_URL/POSTGRES_URL, or POSTGRES_USER)");
-      }
-      if (!process.env.POSTGRES_PASSWORD) {
-        errors.push("PostgreSQL password is required in production (set DATABASE_URL/POSTGRES_URL, or POSTGRES_PASSWORD)");
-      }
+  if (
+    config.adhan.volume < 0 ||
+    config.adhan.volume > 1 ||
+    Number.isNaN(config.adhan.volume)
+  ) {
+    errors.push(
+      "ADHAN_VOLUME must be a number between 0 and 1.",
+    );
+  }
+
+  if (
+    config.prayerTimes.notifyBeforeMinutes < 0 ||
+    Number.isNaN(config.prayerTimes.notifyBeforeMinutes)
+  ) {
+    errors.push(
+      "PRAYER_NOTIFY_BEFORE_MINUTES must be a valid positive number.",
+    );
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    const hasConnectionUrl = Boolean(
+      process.env.POSTGRES_URL ||
+      process.env.DATABASE_URL,
+    );
+
+    const hasSeparatePostgresVariables = Boolean(
+      process.env.POSTGRES_HOST &&
+      process.env.POSTGRES_USER &&
+      process.env.POSTGRES_PASSWORD &&
+      process.env.POSTGRES_DB,
+    );
+
+    if (
+      !hasConnectionUrl &&
+      !hasSeparatePostgresVariables
+    ) {
+      errors.push(
+        "PostgreSQL connection is required in production. Set DATABASE_URL/POSTGRES_URL or the separate POSTGRES_* variables.",
+      );
     }
+  }
+
+  if (process.env.NODE_ENV !== "production") {
+    logger.debug("BaAlwi environment check:");
+    logger.debug(
+      "DISCORD_TOKEN exists:",
+      Boolean(token),
+    );
+    logger.debug(
+      "CLIENT_ID exists:",
+      Boolean(process.env.CLIENT_ID),
+    );
+    logger.debug(
+      "GUILD_ID exists:",
+      Boolean(process.env.GUILD_ID),
+    );
+    logger.debug(
+      "DATABASE_URL exists:",
+      Boolean(
+        process.env.DATABASE_URL ||
+        process.env.POSTGRES_URL,
+      ),
+    );
+    logger.debug(
+      "NODE_ENV:",
+      process.env.NODE_ENV || "development",
+    );
   }
 
   return errors;
 }
 
 const configErrors = validateConfig(botConfig);
+
 if (configErrors.length > 0) {
-  logger.error("Bot configuration errors:", configErrors.join("\n"));
+  logger.error(
+    "BaAlwi bot configuration errors:\n" +
+      configErrors.join("\n"),
+  );
+
   if (process.env.NODE_ENV === "production") {
     process.exit(1);
   }
 }
 
+// Compatibility export used by some Titan files.
 export const BotConfig = botConfig;
 
+// ==================================================
+// COMMAND CATEGORY FEATURE MAP
+// ==================================================
+
 const COMMAND_CATEGORY_FEATURE_MAP = {
+  core: null,
+
+  adhkar: "adhkar",
+  azkar: "adhkar",
+
+  awrad: "awrad",
+  wird: "awrad",
+
+  qasaid: "qasaid",
+  poems: "qasaid",
+
+  mawalid: "mawalid",
+  mawlid: "mawalid",
+
+  hadrat: "hadrat",
+  hadra: "hadrat",
+
+  duas: "duas",
+  dua: "duas",
+
+  prayer: "prayerTimes",
+  prayers: "prayerTimes",
+  prayertimes: "prayerTimes",
+  prayer_times: "prayerTimes",
+
+  adhan: "adhan",
+  reminders: "reminders",
+
+  bookmark: "bookmarks",
+  bookmarks: "bookmarks",
+
+  search: "search",
+  utility: "utility",
+  voice: "voice",
+  logging: "logging",
+
+  /**
+   * Old Titan category mappings are retained so the loader can
+   * recognize them and disable their commands through feature flags.
+   */
   birthday: "birthday",
   community: "community",
   economy: "economy",
   fun: "fun",
   giveaway: "giveaways",
+  giveaways: "giveaways",
   jointocreate: "joinToCreate",
+  join_to_create: "joinToCreate",
   leveling: "leveling",
-  logging: "logging",
   moderation: "moderation",
   music: "music",
   reaction_roles: "reactionRoles",
-  search: "search",
   serverstats: "counter",
+  counter: "counter",
   ticket: "tickets",
+  tickets: "tickets",
   tools: "tools",
-  utility: "utility",
   verification: "verification",
   welcome: "welcome",
 };
 
+// ==================================================
+// HELPER FUNCTIONS
+// ==================================================
+
 function normalizeCategoryKey(category) {
-  return String(category || "").trim().toLowerCase().replace(/\s+/g, "_");
+  return String(category || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
 }
 
 export function getCommandPrefix() {
-  return botConfig.commands?.prefix ?? "!";
+  return botConfig.commands?.prefix || "!";
 }
 
 export function getBotOwners() {
-  return (botConfig.commands?.owners ?? [])
+  return (botConfig.commands?.owners || [])
     .map((id) => String(id).trim())
     .filter(Boolean);
 }
@@ -569,18 +812,31 @@ export function isBotOwner(userId) {
     return false;
   }
 
-  return getBotOwners().includes(String(userId));
+  return getBotOwners().includes(
+    String(userId),
+  );
 }
 
 export function isMaintenanceMode() {
-  return botConfig.commands?.maintenanceMode === true;
+  return (
+    botConfig.commands?.maintenanceMode === true
+  );
 }
 
-export function getBotMessage(key, replacements = {}) {
-  let message = botConfig.messages?.[key] || key;
+export function getBotMessage(
+  key,
+  replacements = {},
+) {
+  let message =
+    botConfig.messages?.[key] || key;
 
-  for (const [placeholder, value] of Object.entries(replacements)) {
-    message = message.replace(new RegExp(`\\{${placeholder}\\}`, "g"), String(value));
+  for (const [placeholder, value] of Object.entries(
+    replacements,
+  )) {
+    message = message.replace(
+      new RegExp(`\\{${placeholder}\\}`, "g"),
+      String(value),
+    );
   }
 
   return message;
@@ -591,17 +847,26 @@ export function isFeatureEnabled(featureKey) {
     return true;
   }
 
-  return botConfig.features?.[featureKey] !== false;
+  return (
+    botConfig.features?.[featureKey] !== false
+  );
 }
 
 export function isCommandCategoryEnabled(category) {
-  const normalized = normalizeCategoryKey(category);
+  const normalized =
+    normalizeCategoryKey(category);
 
   if (!normalized || normalized === "core") {
     return true;
   }
 
-  const featureKey = COMMAND_CATEGORY_FEATURE_MAP[normalized];
+  const featureKey =
+    COMMAND_CATEGORY_FEATURE_MAP[normalized];
+
+  /**
+   * Unknown categories remain enabled so new BaAlwi command
+   * categories do not silently disappear.
+   */
   if (!featureKey) {
     return true;
   }
@@ -609,43 +874,179 @@ export function isCommandCategoryEnabled(category) {
   return isFeatureEnabled(featureKey);
 }
 
-export function getApplicationStatusColor(status) {
-  const colors = botConfig.applications?.statusColors || {};
+export function getContentCategory(categoryKey) {
+  const normalized =
+    normalizeCategoryKey(categoryKey);
+
+  return (
+    botConfig.content?.categories?.[normalized] ||
+    null
+  );
+}
+
+export function isContentCategoryEnabled(
+  categoryKey,
+) {
+  const category =
+    getContentCategory(categoryKey);
+
+  return category?.enabled === true;
+}
+
+export function getPrayerConfig(prayerName) {
+  const normalized =
+    normalizeCategoryKey(prayerName);
+
+  return (
+    botConfig.prayerTimes?.prayers?.[
+      normalized
+    ] || null
+  );
+}
+
+export function isPrayerEnabled(prayerName) {
+  return (
+    getPrayerConfig(prayerName)?.enabled ===
+    true
+  );
+}
+
+/**
+ * Compatibility helper retained for any old modules that import it.
+ */
+export function getApplicationStatusColor(
+  status,
+) {
+  const colors =
+    botConfig.applications?.statusColors || {};
+
   const hex = colors[status];
-  return hex ? getColor(hex) : getColor(status === "approved" ? "success" : status === "denied" ? "error" : "warning");
-}
 
-export function getDefaultApplicationQuestions() {
-  return (botConfig.applications?.defaultQuestions || []).map((entry) =>
-    typeof entry === "string" ? entry : entry.question,
-  ).filter(Boolean);
-}
-
-export function getColor(path, fallback = "#99AAB5") {
-  
-  if (typeof path === "number") return path;
-  if (typeof path === "string" && path.startsWith("#")) {
-    
-    return parseInt(path.replace("#", ""), 16);
+  if (hex) {
+    return getColor(hex);
   }
+
+  if (status === "approved") {
+    return getColor("success");
+  }
+
+  if (status === "denied") {
+    return getColor("error");
+  }
+
+  return getColor("warning");
+}
+
+/**
+ * Compatibility helper retained for old Titan modules.
+ */
+export function getDefaultApplicationQuestions() {
+  return (
+    botConfig.applications
+      ?.defaultQuestions || []
+  )
+    .map((entry) =>
+      typeof entry === "string"
+        ? entry
+        : entry?.question,
+    )
+    .filter(Boolean);
+}
+
+export function getColor(
+  path,
+  fallback = "#A8A8A8",
+) {
+  if (typeof path === "number") {
+    return path;
+  }
+
+  if (
+    typeof path === "string" &&
+    path.startsWith("#")
+  ) {
+    return Number.parseInt(
+      path.slice(1),
+      16,
+    );
+  }
+
+  if (typeof path !== "string") {
+    return Number.parseInt(
+      fallback.slice(1),
+      16,
+    );
+  }
+
   const result = path
     .split(".")
     .reduce(
-      (obj, key) => (obj && obj[key] !== undefined ? obj[key] : fallback),
+      (current, key) =>
+        current &&
+        current[key] !== undefined
+          ? current[key]
+          : undefined,
       botConfig.embeds.colors,
     );
-  
-  if (typeof result === "string" && result.startsWith("#")) {
-    return parseInt(result.replace("#", ""), 16);
+
+  if (
+    typeof result === "string" &&
+    result.startsWith("#")
+  ) {
+    return Number.parseInt(
+      result.slice(1),
+      16,
+    );
   }
-  return result;
+
+  if (typeof result === "number") {
+    return result;
+  }
+
+  return Number.parseInt(
+    fallback.replace("#", ""),
+    16,
+  );
 }
 
 export function getRandomColor() {
-  const colors = Object.values(botConfig.embeds.colors).flatMap((color) =>
-    typeof color === "string" ? color : Object.values(color),
-  );
-  return colors[Math.floor(Math.random() * colors.length)];
+  const colors = [];
+
+  function collectColors(value) {
+    if (
+      typeof value === "string" &&
+      value.startsWith("#")
+    ) {
+      colors.push(value);
+      return;
+    }
+
+    if (
+      value &&
+      typeof value === "object"
+    ) {
+      for (const nestedValue of Object.values(
+        value,
+      )) {
+        collectColors(nestedValue);
+      }
+    }
+  }
+
+  collectColors(botConfig.embeds.colors);
+
+  if (colors.length === 0) {
+    return getColor("primary");
+  }
+
+  const selected =
+    colors[
+      Math.floor(
+        Math.random() * colors.length,
+      )
+    ];
+
+  return getColor(selected);
 }
 
 export default botConfig;
