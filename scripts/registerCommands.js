@@ -42,7 +42,7 @@ const commandsDirectory =
   path.resolve(
     "src",
     "commands",
-    "BaAlWi",
+    "BaAlwi",
   );
 
 if (!fs.existsSync(commandsDirectory)) {
@@ -150,7 +150,7 @@ await loadCommands(
 
 if (commands.length === 0) {
   throw new Error(
-    "لم يتم العثور على أي أوامر صالحة داخل مجلد BaAlWi.",
+    "لم يتم العثور على أي أوامر صالحة داخل مجلد BaAlwi.",
   );
 }
 
