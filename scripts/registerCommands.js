@@ -38,12 +38,11 @@ if (!clientId) {
  * المسار المتوقع:
  * src/commands/BaAlWi
  */
-const commandsDirectory =
-  path.resolve(
-    "src",
-    "commands",
-    "BaAlwi",
-  );
+const commandsDirectory = path.resolve(
+  "src",
+  "commands",
+  "BaAlwi",
+);
 
 if (!fs.existsSync(commandsDirectory)) {
   throw new Error(
