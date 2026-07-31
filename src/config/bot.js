@@ -352,46 +352,44 @@ export const botConfig = {
   // FEATURE TOGGLES
   // ==================================================
   features: {
-    // BaAlwi content
-    baalawiContent: true,
-    adhkar: true,
-    awrad: true,
-    qasaid: true,
-    mawalid: true,
-    hadrat: true,
-    duas: true,
+  baalawiContent: true,
+  adhkar: true,
+  awrad: true,
+  qasaid: true,
+  mawalid: true,
+  hadrat: true,
+  duas: true,
 
-    // Prayer text systems
-    prayerTimes: true,
-    reminders: true,
+  prayerTimes: true,
+  reminders: true,
 
-    search: true,
-    bookmarks: true,
-    utility: true,
-    logging: true,
+  search: true,
+  bookmarks: true,
+  utility: true,
+  logging: true,
 
-    // Disabled voice systems
-    adhan: false,
-    voice: false,
-    music: false,
+  // Voice connection only
+  voice: true,
 
-    // Disabled Titan systems
-    economy: false,
-    leveling: false,
-    moderation: false,
-    welcome: false,
-    tickets: false,
-    giveaways: false,
-    birthday: false,
-    counter: false,
-    verification: false,
-    reactionRoles: false,
-    joinToCreate: false,
-    tools: false,
-    community: false,
-    fun: false,
-  },
+  // Keep Titan music and audio adhan disabled
+  music: false,
+  adhan: false,
 
+  economy: false,
+  leveling: false,
+  moderation: false,
+  welcome: false,
+  tickets: false,
+  giveaways: false,
+  birthday: false,
+  counter: false,
+  verification: false,
+  reactionRoles: false,
+  joinToCreate: false,
+  tools: false,
+  community: false,
+  fun: false,
+},
   // ==================================================
   // TITAN COMPATIBILITY
   // ==================================================
